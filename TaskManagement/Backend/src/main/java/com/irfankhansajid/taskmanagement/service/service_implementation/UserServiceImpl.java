@@ -2,7 +2,7 @@ package com.irfankhansajid.taskmanagement.service.service_implementation;
 
 import com.irfankhansajid.taskmanagement.exceptions.DuplicatedResourceException;
 import com.irfankhansajid.taskmanagement.exceptions.ResourceNotFoundException;
-import com.irfankhansajid.taskmanagement.exceptions.ValidationExcption;
+import com.irfankhansajid.taskmanagement.exceptions.ValidationException;
 import com.irfankhansajid.taskmanagement.model.Role;
 import com.irfankhansajid.taskmanagement.model.Status;
 import com.irfankhansajid.taskmanagement.model.User;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new ValidationExcption("Invalid password");
+            throw new ValidationException("Invalid password");
         }
 
         return user;
