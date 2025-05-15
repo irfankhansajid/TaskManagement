@@ -7,11 +7,13 @@ import com.irfankhansajid.taskmanagement.model.Role;
 import com.irfankhansajid.taskmanagement.model.Status;
 import com.irfankhansajid.taskmanagement.model.User;
 import com.irfankhansajid.taskmanagement.repository.UserRepository;
+import com.irfankhansajid.taskmanagement.service.EmailService;
 import com.irfankhansajid.taskmanagement.service.UserService;
 import com.irfankhansajid.validation.UserValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,12 +25,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
+    private final EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-    UserValidator userValidator) {
+    UserValidator userValidator, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userValidator = userValidator;
+        this.emailService = emailService;
     }
 
 
@@ -39,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         userValidator.validateUser(user);
         
-        // Check duplicate
+        
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new DuplicatedResourceException("Username already exists");
         }
@@ -84,7 +88,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setEmail(user.getEmail());
         existingUser.setUpdatedAt(LocalDateTime.now());
 
-        // if assword is being updated
+        
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -118,6 +122,66 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    
+        @Override
+        public void sendPasswordResetEmail(String email) {
+            User user = getUserByEmail(email);
+            String resetToken = generateResetToken();
+            user.setResetToken(resetToken);
+            user.setResetTokenExpiry(LocalDateTime.now().plusHours(24));
+            userRepository.save(user);
+            
+          
+            emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
+        }
+    
+        @Override
+        public void resetPassword(String email, String token, String newPassword) {
+            User user = getUserByEmail(email);
+            if (!user.getResetToken().equals(token) || 
+                user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+                throw new ValidationException("Invalid or expired reset token");
+            }
+            
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setResetToken(null);
+            user.setResetTokenExpiry(null);
+            userRepository.save(user);
+        }
+    
+        @Override
+        public void verifyEmail(String token) {
+            User user = userRepository.findByEmailVerificationToken(token)
+                .orElseThrow(() -> new ValidationException("Invalid verification token"));
+            
+            user.setEmailVerified(true);
+            user.setEmailVerificationToken(null);
+            userRepository.save(user);
+        }
+    
+        @Override
+        public void resendVerificationEmail(String email) {
+            User user = getUserByEmail(email);
+            if (user.isEmailVerified()) {
+                throw new ValidationException("Email already verified");
+            }
+            
+            String verificationToken = generateVerificationToken();
+            user.setEmailVerificationToken(verificationToken);
+            userRepository.save(user);
+            
+            
+            emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        }
+    
+        private String generateResetToken() {
+            return UUID.randomUUID().toString();
+        }
+    
+        private String generateVerificationToken() {
+            return UUID.randomUUID().toString();
+        }
+    
 
     
 }

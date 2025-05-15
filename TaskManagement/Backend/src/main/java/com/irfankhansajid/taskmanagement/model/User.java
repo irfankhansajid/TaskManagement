@@ -1,4 +1,3 @@
-
 package com.irfankhansajid.taskmanagement.model;
 
 import jakarta.persistence.*;
@@ -40,6 +39,11 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private boolean emailVerified = false;
+    private String emailVerificationToken;
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
 
 
 

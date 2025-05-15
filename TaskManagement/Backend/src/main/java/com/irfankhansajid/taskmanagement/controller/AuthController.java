@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.irfankhansajid.taskmanagement.model.User;
@@ -15,6 +16,7 @@ import com.irfankhansajid.taskmanagement.security.JwtUtil;
 import com.irfankhansajid.taskmanagement.service.UserService;
 import com.irfankhansajid.taskmanagement.utils.JwtResponse;
 import com.irfankhansajid.taskmanagement.utils.LoginRequest;
+import com.irfankhansajid.taskmanagement.utils.PasswordResetRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -51,6 +53,35 @@ public class AuthController {
         
         return ResponseEntity.ok(new JwtResponse(jwt, user));
     }
+
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody PasswordResetRequest request) {
+        userService.sendPasswordResetEmail(request.getEmail());
+        return ResponseEntity.ok("Password reset request sent");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request) {
+        userService.resetPassword(request.getEmail(), request.getResetToken(), request.getNewPassword());
+        return ResponseEntity.ok("Password reset successful");
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
+        userService.verifyEmail(token);
+        return ResponseEntity.ok("Email verified successfully");
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerificationEmail(@RequestParam String email) {
+        userService.resendVerificationEmail(email);
+        return ResponseEntity.ok("Verification email sent");
+    }
+    
+    
+    
+    
     
     
     

@@ -25,6 +25,11 @@ public interface UserService {
 
     User getUserByEmail(String email);
 
+    void sendPasswordResetEmail(String email);
+    void resetPassword(String email, String token, String newPassword);
+    void verifyEmail(String token);
+    void resendVerificationEmail(String email);
+
 
 
 } 
