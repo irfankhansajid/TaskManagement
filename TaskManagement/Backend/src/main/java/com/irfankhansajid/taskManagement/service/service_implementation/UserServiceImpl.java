@@ -17,8 +17,9 @@ import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
 
@@ -85,14 +86,27 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         User existingUser = getUserById(user.getId());
 
-        existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setUpdatedAt(LocalDateTime.now());
+        userValidator.validateUser(user);
 
+        //  if new username is different from current username
+        if (!existingUser.getUsername().equals(user.getUsername()) && 
+            userRepository.existsByUsername(user.getUsername())) {
+            throw new DuplicatedResourceException("Username already exists");
+        }
+
+        //  if new email is different from current email
+        if (!existingUser.getEmail().equals(user.getEmail()) && 
+            userRepository.existsByEmail(user.getEmail())) {
+            throw new DuplicatedResourceException("Email already exists");
+        }
+
+        existingUser.setUsername(user.getUsername());
+        existingUser.setEmail(user.getEmail());
         
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
+        existingUser.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(existingUser);
     }

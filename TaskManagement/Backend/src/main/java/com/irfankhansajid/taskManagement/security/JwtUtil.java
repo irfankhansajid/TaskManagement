@@ -1,6 +1,7 @@
 package com.irfankhansajid.taskManagement.security;
 
 import java.nio.charset.StandardCharsets;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,13 +9,14 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -26,13 +28,22 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    private final SecretKey signingKey;
+    private SecretKey signingKey;
 
-    public JwtUtil() {
-        // Generate a secure key once during initialization
-        this.signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    public void setSecret(String secret) {
+        this.secret = secret;
+
+        if (secret == null || secret.isEmpty() && secret.length() < 32) {
+            throw new IllegalArgumentException("JWT secret cannot be null or empty and must be at least 32 characters long");
+        }
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Value("${jwt.expiration}")
+    public void setExpiration(Long expiration) {
+        this.expiration = expiration;
+    }
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());

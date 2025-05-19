@@ -24,9 +24,9 @@ public class ProjectServiceImpl implements ProjectService{
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository, TaskRepository taskRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository, TaskRepository taskRepository, ProjectValidator projectValidator) {
         this.projectRepository = projectRepository;
-        this.projectValidator = new ProjectValidator();
+        this.projectValidator = projectValidator;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
     }
@@ -36,13 +36,11 @@ public class ProjectServiceImpl implements ProjectService{
     public Project createProject(Project project) {
        
         projectValidator.validateProject(project);
-        Project newProject = new Project();
-        newProject.setName(project.getName());
-        newProject.setDescription(project.getDescription());
-        newProject.setCreatedAt(LocalDateTime.now());
-        newProject.setUpdatedAt(LocalDateTime.now());
-        newProject.setOwner(project.getOwner());
-        return projectRepository.save(newProject);
+        
+        project.setCreatedAt(LocalDateTime.now());
+        project.setUpdatedAt(LocalDateTime.now());
+
+        return projectRepository.save(project);
     }
 
     @Override
@@ -55,7 +53,10 @@ public class ProjectServiceImpl implements ProjectService{
 
     @Override
     public Project updateProject(Project project) {
-        Project existingProject = new Project();
+        Project existingProject = getProjectById(project.getId());
+
+        projectValidator.validateProject(project);
+
 
         existingProject.setName(project.getName());
         existingProject.setDescription(project.getDescription());
@@ -93,6 +94,9 @@ public class ProjectServiceImpl implements ProjectService{
             new ResourceNotFoundException("Task not found with id: " + taskId)
         );
         project.getTasks().add(task);
+        task.setProject(project);
+
+        taskRepository.save(task);
         return projectRepository.save(project);
     }
 

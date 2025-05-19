@@ -2,6 +2,7 @@ package com.irfankhansajid.taskManagement.controller;
 
 import java.util.List;
 
+import com.irfankhansajid.taskManagement.model.TaskStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.irfankhansajid.taskManagement.model.Priority;
-import com.irfankhansajid.taskManagement.model.Status;
 import com.irfankhansajid.taskManagement.model.Task;
 import com.irfankhansajid.taskManagement.service.TaskService;
 
@@ -61,7 +61,7 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}/status")
-    public ResponseEntity<Task> updateTaskStatus(@PathVariable Long taskId, @RequestParam Status status) {
+    public ResponseEntity<Task> updateTaskStatus(@PathVariable Long taskId, @RequestParam TaskStatus status) {
         return ResponseEntity.ok(taskService.updateTaskStatus(taskId, status));
     }
 
@@ -71,7 +71,7 @@ public class TaskController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<Task>> getTasksByStatus(@PathVariable Status status) {
+    public ResponseEntity<List<Task>> getTasksByStatus(@PathVariable TaskStatus status) {
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
 
