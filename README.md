@@ -11,7 +11,7 @@ A full-stack task management application built with Spring Boot and React.
 - MySQL
 - Maven
 
-“Frontend was initially set up using TypeScript, but switched to JavaScript to focus on fundamentals first.”
+"Frontend was initially set up using TypeScript, but switched to JavaScript to focus on fundamentals first."
 ### Frontend
 - React.js
 - Tailwind CSS
