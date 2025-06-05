@@ -1,64 +1,16 @@
 
 import './App.css'
 import React from 'react'
-
-import { AuthProvider } from './contexts/AuthProvider'
-import { useAuth } from './contexts/useAuth'
-import {
-  BrowserRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
-import AppLayout from './components/layout/AppLayout';
-import Dashboard from './pages/Dashboard';
-import Tasks from './pages/Tasks';
-import Projects from './pages/Projects';
-import Profile from './pages/Profile';
-import NotFound from './pages/NotFound';
-import { Toaster } from './components/ui/sonner';
-import Login from './pages/Login';
-
-function ProtectedRoute({ children }) {
-  const {isAuthenticated, loading} = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-  if (!isAuthenticated) {
-    return <Navigate to={"/login"} />
-  }
-
-  return children;
-}
-
+import { Button } from './components/ui/button'
 
 function App() {
+
+
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }>
-            <Route index element={<Dashboard />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-      </Router>
-    </AuthProvider>
-  );
+    <div className="flex min-h-svh flex-col items-center justify-center">
+    <Button>Click me</Button>
+  </div>
+  )
 }
 
 export default App
-
-
