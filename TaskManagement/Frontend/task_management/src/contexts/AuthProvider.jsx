@@ -88,10 +88,11 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!token,
       loading,
       error,
+      setError,
       login,
       logout,
       register
-    }), [user, token, loading, error, login, logout, register]);
+    }), [user, token, loading, error,setError, login, logout, register]);
     
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

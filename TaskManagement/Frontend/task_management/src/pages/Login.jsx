@@ -2,22 +2,21 @@ import { useAuth } from '@/contexts/useAuth';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { Tabs, TabsList } from '@/components/ui/tabs';
-import { TabsContent, TabsTrigger } from '@radix-ui/react-tabs';
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+
 
 
 
 function Login () {
 
  const navigate                           = useNavigate();
-  const {login, register, error, loading } = useAuth();
-    const [activeTab, setActiveTab]          = useState("login");
+ const {login, register, error, loading, setError } = useAuth();
+ const [activeTab, setActiveTab]          = useState("login");
     
 
 
@@ -59,6 +58,20 @@ function Login () {
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
+
+          // validate register data
+        if (registerData.password.length < 6) {
+          setError("Password must be at least 6 characters")
+          return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(registerData.email)) {
+          setError("Please enter a valid email address");
+          return;
+        }
+
+
 
         const success = await register(registerData);
         if (success) {

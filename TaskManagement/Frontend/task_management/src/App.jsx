@@ -18,6 +18,7 @@ import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import { Toaster } from './components/ui/sonner';
 import Login from './pages/Login';
+import { ToastProvider } from './contexts/ToastContext';
 
 function ProtectedRoute({ children }) {
   const {isAuthenticated, loading} = useAuth();
@@ -36,25 +37,28 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={
+            <Route path = '/login' element = {<Login />} />
+            <Route path='/' element={
               <ProtectedRoute>
                 <AppLayout />
               </ProtectedRoute>
             }>
+
+
             <Route index element={<Dashboard />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="projects" element={<Projects />} />
             <Route path="profile" element={<Profile />} />
           </Route>
-          <Route path="/login" element={<Login />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
       </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }
