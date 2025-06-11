@@ -56,7 +56,7 @@ const Sidebar = () => {
 
             <div className='p-4 border-t border-gray-200'>
                 <Button variant = "outline" className = "w-full flex items-center justify-center"
-                onclick={logout}>
+                onClick={logout}>
                     <LogOut className='mr-2 h-4 w-4'/>
                     <span>Log out</span>
                 </Button>

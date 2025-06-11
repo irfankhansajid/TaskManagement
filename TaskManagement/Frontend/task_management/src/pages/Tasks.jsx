@@ -43,7 +43,7 @@ function Tasks() {
 
   useEffect(() => {
     fetchTasks();
-  }, );
+  }, []);
 
   const fetchTasks = async () => {
     try {

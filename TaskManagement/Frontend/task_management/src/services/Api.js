@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const api = axios.create({
     baseURL: 'http://localhost:8080/api',
@@ -27,6 +28,13 @@ api.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('token');
+            toast({
+                title      : 'Session expired',
+                description: 'You have been logged out due to inactivity. Please log in again.',
+                variant    : 'destructive',
+                duration   : 5000,
+
+            });
             console.error('Unauthorized access - redirecting to login');
             window.location.href = '/login';
         }

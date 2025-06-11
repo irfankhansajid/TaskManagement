@@ -1,15 +1,20 @@
 import { useAuth } from '@/contexts/useAuth'
 import React, { useState } from 'react'
 import { Button } from '../ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, Search, X, Bell } from 'lucide-react';
+import { Input } from '../ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { AvatarFallback } from '../ui/avatar';
+import { Avatar } from '@radix-ui/react-avatar';
+import { Link } from 'react-router-dom';
 
 
 function Header() {
-  const { user }                            = useAuth();
+  const { user, logout }                            = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery]       = useState('');
 
-    // Get user initials for avatar
+                  // Get user initials for avatar
   const getUserInitials = () => {
     if (!user) return '?';
     if (user.name) {
@@ -90,8 +95,14 @@ function Header() {
                   <Link to = "/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to = "/logout">Log out</Link>
+                <DropdownMenuItem 
+                  onClick= {( )=> {
+                    logout();
+                    
+                    window.location.href = '/login';
+                  }}
+                >
+                  Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -2,7 +2,9 @@ import { useContext } from "react";
 import { ToastContext } from "./ToastContext";
 
 
-export function useToast() {
+const TOAST_REMOVE_DELAY = 5000;
+
+function useToast() {
     const context = useContext(ToastContext);
 
     if (context === undefined) {
@@ -11,3 +13,4 @@ export function useToast() {
 
     return context;
 }
+export {useToast, TOAST_REMOVE_DELAY};
